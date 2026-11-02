@@ -1,0 +1,50 @@
+import os
+import shutil
+
+# Düzenlenecek klasörün yolu (Kendi bilgisayarına göre değiştirmelisin)
+# Örneğin Windows için: r"C:\Users\KullaniciAdi\Downloads"
+hedef_klasor = r"C:\Kalasor\Yolunu\Buraya\Yaz"
+
+# Dosya türlerine göre klasör isimleri ve uzantılar
+uzantilar = {
+    "Gorseller": [".jpg", ".jpeg", ".png", ".gif"],
+    "Videolar": [".mp4", ".mkv", ".avi", ".mov"],
+    "Ses_Kayitlari": [".mp3", ".wav", ".m4a"],  # YouTube kurgularındaki ses dosyaları için
+    "Belgeler": [".pdf", ".docx", ".txt", ".pptx"], # Ders notları ve sunumlar için
+    "Yazilim_Dosyalari": [".py", ".html", ".css", ".js"]
+}
+
+def dosya_duzenle():
+    # Hedef klasördeki tüm dosyaları tara
+    for dosya in os.listdir(hedef_klasor):
+        dosya_yolu = os.path.join(hedef_klasor, dosya)
+        
+        # Eğer okunan öğe bir klasörse işlem yapmadan atla
+        if os.path.isdir(dosya_yolu):
+            continue
+            
+        dosya_uzantisi = os.path.splitext(dosya)[1].lower()
+        tasindi = False
+
+        # Uzantıyı sözlükte (dictionary) ara
+        for klasor_adi, uzanti_listesi in uzantilar.items():
+            if dosya_uzantisi in uzanti_listesi:
+                yeni_klasor_yolu = os.path.join(hedef_klasor, klasor_adi)
+                
+                # Eğer o isimde bir klasör yoksa oluştur
+                if not os.path.exists(yeni_klasor_yolu):
+                    os.makedirs(yeni_klasor_yolu)
+                    
+                # Dosyayı ilgili klasörün içine taşı
+                shutil.move(dosya_yolu, os.path.join(yeni_klasor_yolu, dosya))
+                print(f"[{klasor_adi}] klasörüne taşındı: {dosya}")
+                tasindi = True
+                break
+                
+        if not tasindi:
+            print(f"Bilinmeyen format, olduğu yerde bırakıldı: {dosya}")
+
+if __name__ == "__main__":
+    print("Dosya düzenleme işlemi başlıyor...")
+    dosya_duzenle()
+    print("İşlem tamamlandı! Klasörün artık tertemiz.")
